@@ -1,0 +1,17 @@
+[
+  {
+    "id": 1,
+    "name": "Indomie Kuah Kari Ayam 90g",
+    "price": 2900,
+    "stock": 50,
+    "unit": "PACK"
+  },
+  {
+    "id": 2,
+    "name": "Indomie Kuah Kari Ayam 90g",
+    "price": 2900,
+    "stock": 50,
+    "unit": "PACK"
+  },
+  { "id": 3, "name": "Royco Ayam", "price": 4500, "stock": 50, "unit": "PACK" }
+]
