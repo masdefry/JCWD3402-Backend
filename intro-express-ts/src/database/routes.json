@@ -1,1 +1,74 @@
-[]
+[
+  {
+    "id": 1,
+    "departure_city": "Jakarta",
+    "destination_city": "Bandung",
+    "schedules": [
+      { "departure_time": "08:00", "arrival_time": "11:00" },
+      { "departure_time": "14:00", "arrival_time": "17:00" }
+    ],
+    "vehicles": "hiace",
+    "total_seat": 14,
+    "price": 120000
+  },
+  {
+    "id": 2,
+    "departure_city": "Jakarta",
+    "destination_city": "Bandung",
+    "schedules": [
+      { "departure_time": "08:00", "arrival_time": "11:00" },
+      { "departure_time": "14:00", "arrival_time": "17:00" }
+    ],
+    "vehicles": "bus",
+    "total_seat": 14,
+    "price": 120000
+  },
+  {
+    "id": 3,
+    "departure_city": "Surabaya",
+    "destination_city": "Malang",
+    "schedules": [
+      { "departure_time": "07:30", "arrival_time": "09:00" },
+      { "departure_time": "13:00", "arrival_time": "14:30" }
+    ],
+    "vehicles": "elf",
+    "total_seat": 16,
+    "price": 90000
+  },
+  {
+    "id": 4,
+    "departure_city": "Yogyakarta",
+    "destination_city": "Semarang",
+    "schedules": [
+      { "departure_time": "06:00", "arrival_time": "09:00" },
+      { "departure_time": "18:00", "arrival_time": "21:00" }
+    ],
+    "vehicles": "bus",
+    "total_seat": 30,
+    "price": 100000
+  },
+  {
+    "id": 5,
+    "departure_city": "Denpasar",
+    "destination_city": "Gilimanuk",
+    "schedules": [
+      { "departure_time": "05:00", "arrival_time": "08:00" },
+      { "departure_time": "15:00", "arrival_time": "18:00" }
+    ],
+    "vehicles": "hiace",
+    "total_seat": 12,
+    "price": 75000
+  },
+  {
+    "id": 6,
+    "departure_city": "Medan",
+    "destination_city": "Berastagi",
+    "schedules": [
+      { "departure_time": "09:00", "arrival_time": "11:30" },
+      { "departure_time": "17:00", "arrival_time": "19:30" }
+    ],
+    "vehicles": "elf",
+    "total_seat": 16,
+    "price": 85000
+  }
+]

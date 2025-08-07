@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import fs from 'fs';
-import { readFile } from '../utils/read.file';
+import { readFile } from '../utils/read.write.file';
 
 export const createProductController = (req: Request, res: Response) => {
   const { name, price, stock, unit } = req.body;
@@ -74,7 +74,7 @@ export const deleteProductController = (req: Request, res: Response) => {
 
   res.status(200).json({
     success: true,
-    message: `Delete product with id = ${idProduct} successfull`, 
-    data: {}
-  })
+    message: `Delete product with id = ${idProduct} successfull`,
+    data: {},
+  });
 };
