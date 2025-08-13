@@ -1,0 +1,125 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Member{
+  mid     String     @id 
+  name    String     @db.VarChar(50)
+  address String     
+  phoneNumber String @db.VarChar(15)
+  email   String     @db.VarChar(100)
+  idCardNumber  String  @db.VarChar(25)
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  library_branches LibraryBranch[]
+
+  @@map("members")
+}
+
+model LibraryBranch{
+  id      Int      @id @default(autoincrement())
+  name    String   @db.VarChar(50)
+  address String 
+  phoneNumber String  @db.VarChar(15)
+  mid     String
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  members Member @relation(fields: [mid], references: [mid])
+
+  @@map("library_branches")
+}
+
+model Staff{
+  id   String    @id @default(uuid())
+  name String    @db.VarChar(50)
+  email String   @db.VarChar(100)
+  phoneNumber String @db.VarChar(15)
+  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  staff_schedules StaffSchedule[]
+
+  @@map("staffs")
+}
+
+model StaffSchedule{
+  id    Int    @id @default(autoincrement())
+  workDay String  @db.VarChar(10)
+  Shift   DateTime  @db.Time() 
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  staffId    String 
+  staffs  Staff @relation(fields: [staffId], references: [id])
+
+  @@map("staff_schedules")
+}
+
+model Book{
+  id   String    @id @default(uuid())
+  title String 
+  author String 
+  publishYear String 
+  publisher String 
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  transaction_books TransactionBook[]
+
+  @@map("books")
+}
+
+model Transaction{
+  id   String    @id
+  dueDate DateTime
+  returnDate DateTime?
+  charge  Int    @default(0)
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  transaction_books TransactionBook[]
+
+  @@map("transactions")
+}
+
+model TransactionBook{
+  id    Int  @id @default(autoincrement())
+  transactionId String 
+  bookId        String
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  transactions  Transaction @relation(fields: [transactionId], references: [id])
+  books Book  @relation(fields: [bookId], references: [id])
+
+  @@map("transaction_books")
+}
+
