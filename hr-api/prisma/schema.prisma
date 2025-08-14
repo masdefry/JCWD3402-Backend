@@ -1,0 +1,156 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Employee{
+  uid         String     @id @default(uuid())
+  fullName    String     @db.VarChar(50)
+  phoneNumber String @db.VarChar(15)
+  email   String     @db.VarChar(100)
+  totalLeaveBalance  Int  @default(12)
+  employmentStatus   EmploymentStatus
+  departmentId       Int
+  positionId         Int
+  workShiftId        Int
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  departments Department @relation(fields: [departmentId], references: [id])
+  positons Position @relation(fields: [positionId], references: [id])
+  work_shifts WorkShift @relation(fields: [workShiftId], references: [id])
+  attendances Attendance[]
+
+  requestEmployee    LeaveRequest[] @relation("RequestEmployee")
+  approvedManager    LeaveRequest[] @relation("ApprovedManager")
+  approvedHR         LeaveRequest[] @relation("ApprovedHR")
+
+  @@map("employees")
+}
+
+enum EmploymentStatus{
+  PERMANENT
+  CONTRACT
+  PART_TIME
+}
+
+model Department{
+  id  Int   @id @default(autoincrement())
+  name  String
+  division  Division
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  employees   Employee[]
+
+  @@map("departments")
+}
+
+enum Division{
+  ACADEMIC
+  HR
+  OPERATIONAL
+  IT
+}
+
+model Position{
+  id  Int   @id @default(autoincrement())
+  name  String 
+  role  RolePosition
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  employees   Employee[]
+
+  @@map("positions")
+}
+
+enum RolePosition{
+  MANAGER
+  STAFF
+}
+
+model WorkShift{
+  id  Int   @id @default(autoincrement())
+  code  String 
+  startTime DateTime  @db.Time()
+  endTime DateTime  @db.Time()
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  attendances Attendance[]
+  employees   Employee[]
+
+  @@map("work_shifts")
+}
+
+model Attendance{
+  id  Int   @id @default(autoincrement())
+  date  DateTime  @db.Date
+  clockIn DateTime  @db.Time()
+  clockOut DateTime  @db.Time()
+  deduction Int      @default(0)
+  workShiftId Int
+  uid         String 
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  work_shifts WorkShift @relation(fields: [workShiftId], references: [id])
+  employees   Employee  @relation(fields: [uid], references: [uid])
+
+  @@map("attendances")
+}
+
+model LeaveRequest{
+  id  Int   @id @default(autoincrement())
+  startDate DateTime  @db.Date
+  endDate DateTime  @db.Date
+  totalDays Int
+  reason    String?
+  status    LeaveStatus
+
+  requestEmployeeId   String 
+  requestEmployee     Employee    @relation("RequestEmployee", fields: [requestEmployeeId], references: [uid])
+
+  approvedManagerId   String 
+  approvedManager     Employee    @relation("ApprovedManager", fields: [approvedManagerId], references: [uid])
+
+  approvedHRId        String 
+  approvedHR          Employee    @relation("ApprovedHR", fields: [approvedHRId], references: [uid])
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+
+  @@map("leave_requests")
+}
+
+enum LeaveStatus{
+  WAITING_FOR_APPROVAL
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
