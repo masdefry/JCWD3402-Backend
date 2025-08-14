@@ -111,6 +111,7 @@ model Attendance{
   deduction Int      @default(0)
   workShiftId Int
   uid         String 
+  status      AttendanceStatus
 
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
@@ -120,6 +121,13 @@ model Attendance{
   employees   Employee  @relation(fields: [uid], references: [uid])
 
   @@map("attendances")
+}
+
+enum AttendanceStatus{
+  PRESENT
+  ABSENT
+  LEAVE
+  WFH
 }
 
 model LeaveRequest{
