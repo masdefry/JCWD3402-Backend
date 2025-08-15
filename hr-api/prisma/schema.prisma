@@ -19,6 +19,7 @@ model Employee{
   fullName    String     @db.VarChar(50)
   phoneNumber String @db.VarChar(15)
   email   String     @db.VarChar(100)
+  password String 
   totalLeaveBalance  Int  @default(12)
   employmentStatus   EmploymentStatus
   departmentId       Int
