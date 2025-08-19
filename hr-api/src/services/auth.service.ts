@@ -2,24 +2,33 @@ import prisma from '../config/prisma.client';
 import { Employee } from '../generated/prisma';
 import bcrypt from 'bcrypt';
 import { createToken } from '../utils/create.token';
+import transporter from '../config/nodemailer.transporter';
 const saltRounds = 10;
 
 export const registerService = async ({
   fullName,
   phoneNumber,
   email,
-  password,
   employmentStatus,
   departmentId,
   positionId,
   workShiftId,
 }: Omit<
   Employee,
-  'uid' | 'createdAt' | 'deletedAt' | 'updatedAt' | 'totalLeaveBalance'
+  | 'uid'
+  | 'createdAt'
+  | 'deletedAt'
+  | 'updatedAt'
+  | 'totalLeaveBalance'
+  | 'isVerified'
+  | 'password'
 >) => {
-  const hashedPassword = await bcrypt.hash(password, saltRounds);
+  const hashedPassword = await bcrypt.hash(
+    process.env.DEFAULT_EMPLOYEE_PASSWORD!,
+    saltRounds
+  );
 
-  return await prisma.employee.create({
+  const createdEmployee = await prisma.employee.create({
     data: {
       fullName,
       phoneNumber,
@@ -31,6 +40,14 @@ export const registerService = async ({
       workShiftId,
     },
   });
+
+  await transporter.sendMail({
+    to: email,
+    subject: 'New Employee Account Activation & Reset Password',
+    html: '<h1>Hehehe</h1>',
+  });
+
+  return createdEmployee;
 };
 
 export const loginService = async ({

@@ -12,6 +12,7 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model Employee{
@@ -19,12 +20,13 @@ model Employee{
   fullName    String     @db.VarChar(50)
   phoneNumber String @db.VarChar(15)
   email   String     @db.VarChar(100)
-  password String 
+  password String    @default("purwadhika@2025")
   totalLeaveBalance  Int  @default(12)
   employmentStatus   EmploymentStatus
   departmentId       Int
   positionId         Int
   workShiftId        Int
+  isVerified         Boolean  @default(false)
 
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt

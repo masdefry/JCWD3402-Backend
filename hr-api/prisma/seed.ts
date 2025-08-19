@@ -46,9 +46,9 @@ const workShifts = [
 
 async function seed() {
   try {
-    // await prisma.department.createMany({
-    //   data: departments,
-    // });
+    await prisma.department.createMany({
+      data: departments,
+    });
 
     await prisma.position.createMany({
       data: positions,
