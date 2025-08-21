@@ -1,22 +1,91 @@
+'use client';
 import HeaderTitle from '@/components/HeaderTitle';
 import {
   PiIdentificationCardDuotone,
   PiPhoneListDuotone,
-  PiClockAfternoonDuotone,
-  PiUserCircleGearDuotone,
 } from 'react-icons/pi';
+import {
+  PiUserCircleDuotone,
+  PiBuildingDuotone,
+  PiBagDuotone,
+  PiClockUserDuotone,
+} from 'react-icons/pi';
+import { useFormik } from 'formik';
 import { AiTwotoneMail } from 'react-icons/ai';
+import axiosInstance from '@/utils/axiosInstance';
 export default function Page() {
+  const onHandleRegisterEmployee = async ({
+    fullName,
+    phoneNumber,
+    email,
+    employmentStatus,
+    departmentId,
+    positionId,
+    workShiftId,
+  }: any) => {
+    try {
+      await axiosInstance.post('/api/auth/register', {
+        fullName,
+        phoneNumber,
+        email,
+        employmentStatus,
+        departmentId,
+        positionId,
+        workShiftId,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const formik = useFormik({
+    initialValues: {
+      fullName: '',
+      email: '',
+      phoneNumber: '',
+      employmentStatus: '',
+      departmentId: '',
+      positionId: '',
+      workShiftId: '',
+    },
+    validationSchema: {},
+    onSubmit: ({
+      fullName,
+      phoneNumber,
+      email,
+      employmentStatus,
+      departmentId,
+      positionId,
+      workShiftId,
+    }) => {
+      onHandleRegisterEmployee({
+        fullName,
+        phoneNumber,
+        email,
+        employmentStatus,
+        departmentId,
+        positionId,
+        workShiftId,
+      });
+    },
+  });
+
   return (
     <>
       <HeaderTitle title='Register Employee' />
 
-      <div className='p-4'>
+      <form
+        onSubmit={formik?.handleSubmit}
+        className='p-4'
+      >
         <div className='flex items-center gap-2 py-2 border-b-1 border-gray-300'>
           <PiIdentificationCardDuotone className='text-2xl text-gray-500' />
           <input
             type='text'
             placeholder='Full Name'
+            name='fullName'
+            value={formik?.values.fullName}
+            onChange={formik?.handleChange}
             className='input border-none text-gray-500 bg-gray-100 w-full focus:outline-none focus:ring-0'
           />
         </div>
@@ -24,6 +93,9 @@ export default function Page() {
           <AiTwotoneMail className='text-2xl text-gray-500' />
           <input
             type='text'
+            name='email'
+            value={formik?.values.email}
+            onChange={formik?.handleChange}
             placeholder='Email'
             className='input border-none text-gray-500 bg-gray-100 w-full focus:outline-none focus:ring-0'
           />
@@ -32,22 +104,67 @@ export default function Page() {
           <PiPhoneListDuotone className='text-2xl text-gray-500' />
           <input
             type='text'
+            name='phoneNumber'
+            value={formik?.values.phoneNumber}
+            onChange={formik?.handleChange}
             placeholder='Phone Number'
             className='input border-none text-gray-500 bg-gray-100 w-full focus:outline-none focus:ring-0'
           />
         </div>
         <div className='flex items-center gap-2 py-2 border-b-1 border-gray-300'>
-          <PiClockAfternoonDuotone className='text-2xl text-gray-500' />
-          <select className='select focus:outline-none focus:ring-0 bg-gray-100 border-none w-full text-gray-500'>
-            <option>Employee Shift</option>
-            <option>Shift-01</option>
+          <PiUserCircleDuotone className='text-2xl text-gray-500' />
+          <select
+            name='employmentStatus'
+            value={formik?.values.employmentStatus}
+            onChange={formik?.handleChange}
+            className='select focus:outline-none focus:ring-0 bg-gray-100 border-none w-full text-gray-500'
+          >
+            <option>Employment Status</option>
+            <option value={'PERMANENT'}>Permanent</option>
+            <option value={'CONTRACT'}>Contract</option>
+            <option value={'INTERN'}>Internship</option>
+            <option value={'PART_TIME'}>Part Time</option>
           </select>
         </div>
         <div className='flex items-center gap-2 py-2 border-b-1 border-gray-300'>
-          <PiUserCircleGearDuotone className='text-2xl text-gray-500' />
-          <select className='select focus:outline-none focus:ring-0 bg-gray-100 border-none w-full text-gray-500'>
-            <option value={1}>Employee Role</option>
-            <option>HR</option>
+          <PiBuildingDuotone className='text-2xl text-gray-500' />
+          <select
+            name='departmentId'
+            value={formik?.values.departmentId}
+            onChange={formik?.handleChange}
+            className='select focus:outline-none focus:ring-0 bg-gray-100 border-none w-full text-gray-500'
+          >
+            <option>Departements</option>
+            <option value={1}>Academic Web Development</option>
+            <option value={2}>Employee Relation</option>
+            <option value={3}>Human Capital</option>
+          </select>
+        </div>
+        <div className='flex items-center gap-2 py-2 border-b-1 border-gray-300'>
+          <PiBagDuotone className='text-2xl text-gray-500' />
+          <select
+            name='positionId'
+            value={formik?.values.positionId}
+            onChange={formik?.handleChange}
+            className='select focus:outline-none focus:ring-0 bg-gray-100 border-none w-full text-gray-500'
+          >
+            <option>Positions</option>
+            <option value={1}>Lecturer</option>
+            <option value={2}>Academic</option>
+            <option value={3}>Senior HR </option>
+            <option value={4}>Junior HR </option>
+          </select>
+        </div>
+        <div className='flex items-center gap-2 py-2 border-b-1 border-gray-300'>
+          <PiClockUserDuotone className='text-2xl text-gray-500' />
+          <select
+            name='workShiftId'
+            value={formik?.values.workShiftId}
+            onChange={formik?.handleChange}
+            className='select focus:outline-none focus:ring-0 bg-gray-100 border-none w-full text-gray-500'
+          >
+            <option>Workshifts</option>
+            <option value={'SHFT-01'}>Shift 1</option>
           </select>
         </div>
 
@@ -56,7 +173,7 @@ export default function Page() {
             Create Employee
           </button>
         </div>
-      </div>
+      </form>
     </>
   );
 }
