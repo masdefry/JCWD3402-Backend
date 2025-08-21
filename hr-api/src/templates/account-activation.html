@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title>Email Verification</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f6f8;
+        margin: 0;
+        padding: 0;
+        color: #333;
+      }
+      .container {
+        max-width: 600px;
+        margin: 40px auto;
+        background-color: #ffffff;
+        border-radius: 8px;
+        padding: 30px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+      h1 {
+        color: #08c855;
+        font-size: 24px;
+        margin-bottom: 20px;
+      }
+      p {
+        font-size: 16px;
+        line-height: 1.6;
+      }
+      .btn {
+        display: inline-block;
+        padding: 12px 20px;
+        margin-top: 20px;
+        background-color: #08c855;
+        color: #ffffff;
+        text-decoration: none;
+        border-radius: 6px;
+        font-weight: bold;
+      }
+      .footer {
+        margin-top: 30px;
+        font-size: 12px;
+        color: #777;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Welcome Aboard!</h1>
+      <p>Hi {{employeeName}},</p>
+      <p>
+        Welcome to our company! To activate your account and set up a new
+        password, please click the button below. 
+      </p>
+      <a
+        href="{{resetLink}}"
+        class="btn"
+        >Reset Password</a
+      >
+      <p>
+        If the button does not work, copy and paste the following link into your
+        browser: <br />
+        <a href="{{resetLink}}">{{resetLink}}</a>
+      </p>
+      <p>Thank you,<br />HR Team</p>
+      <div class="footer">&copy; 2025 Company. All rights reserved.</div>
+    </div>
+  </body>
+</html>

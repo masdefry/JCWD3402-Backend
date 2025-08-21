@@ -4,6 +4,9 @@ import bcrypt from 'bcrypt';
 import { createToken } from '../utils/create.token';
 import transporter from '../config/nodemailer.transporter';
 const saltRounds = 10;
+import fs from 'fs';
+import Handlebars from 'handlebars';
+import path from 'path';
 
 export const registerService = async ({
   fullName,
@@ -41,10 +44,23 @@ export const registerService = async ({
     },
   });
 
+  const templateHtmlDir = path.resolve(__dirname, '../templates');
+  const templateHtmlFile = 'account-activation.html';
+  const templateHtmlPath = path.join(templateHtmlDir, templateHtmlFile);
+
+  const templateHtml = fs.readFileSync(templateHtmlPath, 'utf-8');
+
+  const compiledTemplateHtml = Handlebars.compile(templateHtml);
+
+  const html = compiledTemplateHtml({
+    employeeName: fullName,
+    resetLink: process.env.RESET_LINK_URL,
+  });
+
   await transporter.sendMail({
     to: email,
     subject: 'New Employee Account Activation & Reset Password',
-    html: '<h1>Hehehe</h1>',
+    html: html,
   });
 
   return createdEmployee;

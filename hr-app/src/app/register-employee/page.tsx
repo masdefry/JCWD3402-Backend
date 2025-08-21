@@ -46,7 +46,7 @@ export default function Page() {
         <div className='flex items-center gap-2 py-2 border-b-1 border-gray-300'>
           <PiUserCircleGearDuotone className='text-2xl text-gray-500' />
           <select className='select focus:outline-none focus:ring-0 bg-gray-100 border-none w-full text-gray-500'>
-            <option>Employee Role</option>
+            <option value={1}>Employee Role</option>
             <option>HR</option>
           </select>
         </div>

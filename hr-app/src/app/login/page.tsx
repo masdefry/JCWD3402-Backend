@@ -1,7 +1,46 @@
+'use client';
 import { PiIdentificationCardDuotone } from 'react-icons/pi';
 import { PiPasswordDuotone } from 'react-icons/pi';
+import { useFormik } from 'formik';
+import { loginValidationSchema } from './_schemas/loginValidationSchema';
+import axiosInstance from '@/utils/axiosInstance';
+import useAuthStore from '@/stores/authStore';
+import { useRouter } from 'next/navigation';
 
 export default function Page() {
+  const { setAuth } = useAuthStore();
+  const router = useRouter();
+  const onHandleLogin = async ({ email, password }: any) => {
+    try {
+      const res = await axiosInstance.post('/api/auth/login', {
+        email,
+        password,
+      });
+
+      setAuth({ 
+        fullName: 'xxx', 
+        token: res?.data?.data?.token
+      })
+      router.push('/');
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const formik = useFormik({
+    initialValues: {
+      email: '',
+      password: '',
+    },
+    validationSchema: loginValidationSchema,
+    onSubmit: ({ email, password }) => {
+      onHandleLogin({
+        email,
+        password,
+      });
+    },
+  });
+
   return (
     <>
       <div className='p-10'>
@@ -12,27 +51,45 @@ export default function Page() {
           </p>
         </div>
 
-        <div className='mt-3'>
+        <form
+          onSubmit={formik?.handleSubmit}
+          className='mt-3'
+        >
           <div className='flex items-center gap-2 py-2 border-b-1 border-gray-300'>
             <PiIdentificationCardDuotone className='text-2xl text-gray-500' />
             <input
               type='text'
+              name='email'
+              value={formik?.values?.email}
+              onChange={formik?.handleChange}
               placeholder='Email or Username'
               className='input border-none text-gray-500 bg-gray-100 w-full focus:outline-none focus:ring-0'
             />
           </div>
+          {formik?.errors.email && formik?.touched?.email && (
+            <div id='feedback'>{formik?.errors.email}</div>
+          )}
           <div className='flex items-center gap-2 py-2 border-b-1 border-gray-300'>
             <PiPasswordDuotone className='text-2xl text-gray-500' />
             <input
-              type='text'
+              type='password'
+              name='password'
+              value={formik?.values?.password}
+              onChange={formik?.handleChange}
               placeholder='Password'
               className='input border-none text-gray-500 bg-gray-100 w-full focus:outline-none focus:ring-0'
             />
           </div>
-          <button className='btn bg-green-500  hover:bg-green-600 text-white w-full mt-5'>
+          {formik?.errors.password && formik?.touched?.password && (
+            <div id='feedback'>{formik?.errors.password}</div>
+          )}
+          <button
+            type='submit'
+            className='btn bg-green-500  hover:bg-green-600 text-white w-full mt-5'
+          >
             Sign in
           </button>
-        </div>
+        </form>
       </div>
     </>
   );
