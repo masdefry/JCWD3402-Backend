@@ -38,9 +38,9 @@ export const registerService = async ({
       email,
       password: hashedPassword,
       employmentStatus,
-      departmentId,
-      positionId,
-      workShiftId,
+      departmentId: Number(departmentId),
+      positionId: Number(positionId),
+      workShiftId: Number(workShiftId),
     },
   });
 
@@ -109,5 +109,10 @@ export const loginService = async ({
     }
   );
 
-  return token;
+  return {
+    token, 
+    fullName: findEmployeeByEmail?.fullName, 
+    department: findEmployeeByEmail?.departments?.division,
+    position: findEmployeeByEmail?.positons?.role
+  };
 };

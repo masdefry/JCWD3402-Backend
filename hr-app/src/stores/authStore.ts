@@ -4,7 +4,19 @@ import { persist } from 'zustand/middleware';
 type TUseAuthStore = {
   token: string;
   fullName: string;
-  setAuth: ({ token, fullName }: { token: string; fullName: string }) => void;
+  department: string;
+  position: string;
+  setAuth: ({
+    token,
+    fullName,
+    department,
+    position,
+  }: {
+    token: string;
+    fullName: string;
+    department: string;
+    position: string;
+  }) => void;
 };
 
 const useAuthStore = create<TUseAuthStore>()(
@@ -12,16 +24,23 @@ const useAuthStore = create<TUseAuthStore>()(
     (set) => ({
       token: '',
       fullName: '',
+      department: '',
+      position: '',
 
       setAuth: ({
         token,
         fullName,
-      }: Pick<TUseAuthStore, 'fullName' | 'token'>) => set({ token, fullName }),
+        department,
+        position,
+      }: Pick<
+        TUseAuthStore,
+        'fullName' | 'token' | 'department' | 'position'
+      >) => set({ token, fullName, department, position }),
     }),
     {
       name: 'token',
       partialize: (state: TUseAuthStore) => ({
-        token: state?.token
+        token: state?.token,
       }),
     }
   )

@@ -32,13 +32,14 @@ export const registerController = async (req: Request, res: Response) => {
 export const loginController = async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
-  const token = await loginService({ email, password });
+  const { token, fullName, department, position } = await loginService({
+    email,
+    password,
+  });
 
   res.status(200).json({
     success: true,
     message: 'Login into account successfull',
-    data: {
-      token,
-    },
+    data: { token, fullName, department, position },
   });
 };

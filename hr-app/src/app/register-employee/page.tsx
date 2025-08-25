@@ -13,7 +13,14 @@ import {
 import { useFormik } from 'formik';
 import { AiTwotoneMail } from 'react-icons/ai';
 import axiosInstance from '@/utils/axiosInstance';
-export default function Page() {
+import { registerEmployeeValidationSchema } from './_schemas/registerEmployeeValidationSchema';
+import useAuthStore from '@/stores/authStore';
+import { useState } from 'react';
+import withAuthGuard from '@/hoc/authGuard';
+
+function Page() {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { token } = useAuthStore();
   const onHandleRegisterEmployee = async ({
     fullName,
     phoneNumber,
@@ -24,17 +31,28 @@ export default function Page() {
     workShiftId,
   }: any) => {
     try {
-      await axiosInstance.post('/api/auth/register', {
-        fullName,
-        phoneNumber,
-        email,
-        employmentStatus,
-        departmentId,
-        positionId,
-        workShiftId,
-      });
+      setIsLoading(true);
+      await axiosInstance.post(
+        '/api/auth/register',
+        {
+          fullName,
+          phoneNumber,
+          email,
+          employmentStatus,
+          departmentId,
+          positionId,
+          workShiftId,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
     } catch (error) {
       console.log(error);
+    }finally{
+      setIsLoading(false)
     }
   };
 
@@ -48,7 +66,7 @@ export default function Page() {
       positionId: '',
       workShiftId: '',
     },
-    validationSchema: {},
+    validationSchema: registerEmployeeValidationSchema,
     onSubmit: ({
       fullName,
       phoneNumber,
@@ -164,16 +182,22 @@ export default function Page() {
             className='select focus:outline-none focus:ring-0 bg-gray-100 border-none w-full text-gray-500'
           >
             <option>Workshifts</option>
-            <option value={'SHFT-01'}>Shift 1</option>
+            <option value={1}>Shift 1</option>
           </select>
         </div>
 
         <div className='px-4 py-3 w-full border-gray-200 fixed bottom-0 left-0 right-0 max-w-md mx-auto'>
-          <button className='btn bg-green-500  hover:bg-green-600 text-white w-full'>
-            Create Employee
+          <button
+            disabled={isLoading}
+            type='submit'
+            className='btn bg-green-500  hover:bg-green-600 text-white w-full'
+          >
+            {isLoading? 'Loading...' : 'Create Employee'}
           </button>
         </div>
       </form>
     </>
   );
 }
+
+export default withAuthGuard(Page, ['HR'], ['MANAGER', 'STAFF'])

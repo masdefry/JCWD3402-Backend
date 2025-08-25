@@ -17,10 +17,12 @@ export default function Page() {
         password,
       });
 
-      setAuth({ 
-        fullName: 'xxx', 
-        token: res?.data?.data?.token
-      })
+      setAuth({
+        fullName: res?.data?.fullName,
+        token: res?.data?.data?.token,
+        department: res?.data?.data?.department,
+        position: res?.data?.data?.position,
+      });
       router.push('/');
     } catch (error) {
       console.log(error);
