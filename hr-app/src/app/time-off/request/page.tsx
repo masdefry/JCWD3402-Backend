@@ -2,36 +2,74 @@
 import { MdOutlineDriveFolderUpload } from 'react-icons/md';
 import { PiClockCountdownDuotone } from 'react-icons/pi';
 import { useState } from 'react';
-import { DayPicker } from 'react-day-picker';
+import { DateRange, DayPicker } from 'react-day-picker';
 import { IoCalendarOutline } from 'react-icons/io5';
 import { PiListPlusDuotone } from 'react-icons/pi';
 import HeaderTitle from '@/components/HeaderTitle';
+import { useFormik } from 'formik';
+import axiosInstance from '@/utils/axiosInstance';
+import useAuthStore from '@/stores/authStore';
 export default function Page() {
-  const [date, setDate] = useState<Date | undefined>();
+  const { token } = useAuthStore();
+  const onHandleLeaveRequest = async ({
+    startDate,
+    endDate,
+    reason,
+    files,
+  }: any) => {
+    try {
+      const fd = new FormData();
+      fd.append('startDate', startDate);
+      fd.append('endDate', endDate);
+      fd.append('reason', reason);
+      files?.forEach((file: File) => {
+        fd.append('evidence', file);
+      });
+
+      await axiosInstance.post('/api/time-off/request', fd, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+    } catch (error) {}
+  };
+
+  const formik = useFormik({
+    initialValues: {
+      selectedDate: { from: undefined, to: undefined } as DateRange,
+      reason: '',
+      files: [],
+    },
+    onSubmit: ({ selectedDate, reason, files }) => {
+      onHandleLeaveRequest({
+        startDate: selectedDate?.from,
+        endDate: selectedDate?.to,
+        reason,
+        files,
+      });
+    },
+  });
 
   return (
     <>
       <HeaderTitle title='Request Time Off' />
 
       {/* Form Request Time Off */}
-      <div className='px-4 py-2'>
-        <fieldset className='flex items-center gap-2 py-2 border-b-1 border-gray-300'>
-          <PiClockCountdownDuotone className='text-2xl text-gray-500' />
-          <select
-            defaultValue='Pick a color'
-            className='select w-full bg-gray-100 text-gray-500 border-none'
-          >
-            <option>Time off type</option>
-          </select>
-        </fieldset>
+      <form
+        onSubmit={formik?.handleSubmit}
+        className='px-4 py-2'
+      >
         <fieldset className='flex items-center gap-2 py-2 border-b-1 border-gray-300'>
           <IoCalendarOutline className='text-2xl text-gray-500' />
           <button
+            type='button'
             popoverTarget='rdp-popover'
             className='input bg-gray-100 w-full border-none text-gray-500'
             style={{ anchorName: '--rdp' } as React.CSSProperties}
           >
-            {date ? date.toLocaleDateString() : 'Select date'}
+            {formik?.values?.selectedDate?.from
+              ? `${formik?.values?.selectedDate?.from?.toLocaleDateString()} - ${formik?.values?.selectedDate?.to?.toLocaleDateString()}`
+              : 'Select date'}
           </button>
           <div
             popover='auto'
@@ -41,34 +79,49 @@ export default function Page() {
           >
             <DayPicker
               className='react-day-picker'
-              mode='single'
-              selected={date}
-              onSelect={setDate}
+              mode='range'
+              selected={formik?.values?.selectedDate}
+              onSelect={(date) => {
+                formik?.setFieldValue('selectedDate', date);
+              }}
             />
           </div>
         </fieldset>
         <fieldset className='flex items-center gap-2 py-2 border-b-1 border-gray-300'>
           <PiListPlusDuotone className='text-2xl text-gray-500' />
           <input
+            name='reason'
             type='text'
+            value={formik?.values?.reason}
+            onChange={formik?.handleChange}
             placeholder='Reason'
             className='input border-none text-gray-500 bg-gray-100'
           />
         </fieldset>
         <fieldset className='flex items-center gap-2 py-2 border-b-1 border-gray-300 mt-1'>
-          <legend className='font-bold text-xs text-gray-500'>Upload File Evidence</legend>
+          <legend className='font-bold text-xs text-gray-500'>
+            Upload File Evidence
+          </legend>
           <MdOutlineDriveFolderUpload className='text-2xl text-gray-500' />
           <input
+            name='files'
             type='file'
             className='file-input w-full'
+            multiple
+            onChange={(e) => {
+              formik?.setFieldValue('files', e?.currentTarget?.files);
+            }}
           />
         </fieldset>
-      </div>
-      <div className='px-4 py-3 w-full border-gray-200 fixed bottom-0 left-0 right-0 max-w-md mx-auto'>
-        <button className='btn bg-green-500  hover:bg-green-600 text-white w-full'>
-          Submit Request
-        </button>
-      </div>
+        <div className='px-4 py-3 w-full border-gray-200 fixed bottom-0 left-0 right-0 max-w-md mx-auto'>
+          <button
+            type='submit'
+            className='btn bg-green-500  hover:bg-green-600 text-white w-full'
+          >
+            Submit Request
+          </button>
+        </div>
+      </form>
     </>
   );
 }

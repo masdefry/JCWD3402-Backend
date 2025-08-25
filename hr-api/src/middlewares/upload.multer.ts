@@ -17,11 +17,17 @@ export const uploadMulter = (pathDir: string) => {
       file: Express.Multer.File,
       cb: (error: Error | null, destination: string) => void
     ) {
-      const splitOriginalName = file?.originalname?.split('.') // test.01.xls -> [test, 01, xls]
+      const splitOriginalName = file?.originalname?.split('.'); // test.01.xls -> [test, 01, xls]
       const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-      cb(null, file.fieldname + '-' + uniqueSuffix + `.${splitOriginalName[splitOriginalName.length-1]}`);
+      cb(
+        null,
+        file.fieldname +
+          '-' +
+          uniqueSuffix +
+          `.${splitOriginalName[splitOriginalName.length - 1]}`
+      );
     },
   });
 
-  return multer({ storage: storage });
+  return multer({ storage: storage, limits: { fileSize: 1024 * 1024 * 2 } }); // limit file size 2mb
 };

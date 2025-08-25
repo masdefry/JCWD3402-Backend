@@ -144,11 +144,13 @@ model LeaveRequest{
   requestEmployeeId   String 
   requestEmployee     Employee    @relation("RequestEmployee", fields: [requestEmployeeId], references: [uid])
 
-  approvedManagerId   String 
-  approvedManager     Employee    @relation("ApprovedManager", fields: [approvedManagerId], references: [uid])
+  approvedManagerId   String? 
+  approvedManager     Employee?    @relation("ApprovedManager", fields: [approvedManagerId], references: [uid])
 
-  approvedHRId        String 
-  approvedHR          Employee    @relation("ApprovedHR", fields: [approvedHRId], references: [uid])
+  approvedHRId        String? 
+  approvedHR          Employee?    @relation("ApprovedHR", fields: [approvedHRId], references: [uid])
+
+  leave_request_evidences LeaveRequestEvidence[]
 
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
@@ -156,6 +158,20 @@ model LeaveRequest{
 
 
   @@map("leave_requests")
+}
+
+model LeaveRequestEvidence{
+  id  Int   @id @default(autoincrement())
+  image   String
+
+  leaveRequestId  Int 
+  leaver_requests LeaveRequest @relation(fields: [leaveRequestId], references: [id])
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  @@map("leaver_request_evidences")
 }
 
 enum LeaveStatus{
