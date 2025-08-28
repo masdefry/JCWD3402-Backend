@@ -1,3 +1,4 @@
+import { cloudinaryUpload } from '../config/cloudinary';
 import prisma from '../config/prisma.client';
 import { LeaveRequest } from '../generated/prisma';
 
@@ -26,19 +27,47 @@ export const createTimeOffService = async ({
       },
     });
 
-    const leaveRequestEvidenceToCreate = files?.map(
-      (file: Express.Multer.File) => {
-        return {
-          image: file?.filename,
-          leaveRequestId: createdLeaveRequest?.id,
-        };
-      }
-    ); // [{image: xxx, leaveRequestId: xxx}]
+    // If using memoryStorage & cloudinary
+    const cloudinaryUploaded = files?.map(async (file: Express.Multer.File) => {
+      const uploadedToCloudinary: any = await cloudinaryUpload(file?.buffer);
+      return {
+        image: uploadedToCloudinary.url,
+        leaveRequestId: createdLeaveRequest?.id,
+      };
+    });
+    // If using diskStorage
+    // const leaveRequestEvidenceToCreate = files?.map(
+    //   (file: Express.Multer.File) => {
+    //     return {
+    //       image: file?.filename,
+    //       leaveRequestId: createdLeaveRequest?.id,
+    //     };
+    //   }
+    // ); // [{image: xxx, leaveRequestId: xxx}]
+
+    const leaveRequestEvidenceToCreate = await Promise.all(cloudinaryUploaded);
 
     await tx.leaveRequestEvidence.createMany({
       data: leaveRequestEvidenceToCreate,
     });
   });
+};
+
+export const getTimeOffService = async({
+  requestEmployeeId,
+}: Pick<LeaveRequest, 'requestEmployeeId'>) => {
+  return await prisma.leaveRequest.findMany({
+    where: {
+      requestEmployeeId
+    }, 
+    include: {
+      leave_request_evidences: {
+        select: {
+          image: true
+        }
+      }
+    }
+  })
 };
 
 // User A tf User B

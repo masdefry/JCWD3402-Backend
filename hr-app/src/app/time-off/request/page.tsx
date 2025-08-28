@@ -18,6 +18,7 @@ export default function Page() {
     files,
   }: any) => {
     try {
+      console.log(files);
       const fd = new FormData();
       fd.append('startDate', startDate);
       fd.append('endDate', endDate);
@@ -31,7 +32,9 @@ export default function Page() {
           Authorization: `Bearer ${token}`,
         },
       });
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const formik = useFormik({
@@ -109,7 +112,7 @@ export default function Page() {
             className='file-input w-full'
             multiple
             onChange={(e) => {
-              formik?.setFieldValue('files', e?.currentTarget?.files);
+              formik?.setFieldValue('files', Array?.from(e.target.files || []));
             }}
           />
         </fieldset>

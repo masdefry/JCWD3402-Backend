@@ -1,5 +1,8 @@
 import { Request, Response } from 'express';
-import { createTimeOffService } from '../services/timeoff.service';
+import {
+  createTimeOffService,
+  getTimeOffService,
+} from '../services/timeoff.service';
 
 export const createTimeOffController = async (req: Request, res: Response) => {
   const { startDate, endDate, reason } = req?.body;
@@ -30,4 +33,16 @@ export const createTimeOffController = async (req: Request, res: Response) => {
       reason,
     },
   });
+};
+
+export const getTimeOffController = async (req: Request, res: Response) => {
+  const { uid } = res?.locals?.payload;
+
+  const leaveRequestByEmployeeId = await getTimeOffService({ requestEmployeeId: uid });
+
+  res.status(200).json({
+    success: true, 
+    message: `Get time-off request by userId = ${uid} successfull`, 
+    data: leaveRequestByEmployeeId
+  })
 };

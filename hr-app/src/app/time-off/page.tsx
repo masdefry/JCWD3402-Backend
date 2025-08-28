@@ -1,11 +1,35 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { DayPicker } from 'react-day-picker';
 import { BsArrowRightCircle } from 'react-icons/bs';
 import HeaderTitle from '@/components/HeaderTitle';
 import Link from 'next/link';
+import axiosInstance from '@/utils/axiosInstance';
+import useAuthStore from '@/stores/authStore';
 export default function Page() {
+  const { token } = useAuthStore();
   const [date, setDate] = useState<Date | undefined>();
+  const [requestTimeOff, setRequestTimeOff] = useState<any[]>([]);
+
+  const onGetRequestTimeOff = async () => {
+    try {
+      console.log(token);
+      const res = await axiosInstance.get('/api/time-off/request', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log(res?.data?.data);
+      setRequestTimeOff(res?.data?.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    if (token) onGetRequestTimeOff();
+  }, [token]);
+
   return (
     <>
       <HeaderTitle title='Time Off' />
@@ -43,14 +67,32 @@ export default function Page() {
           />
         </div>
         <div className='mt-3'>
-          <div className='flex justify-between items-center py-1 border-b-1 border-gray-300'>
-            <div>
-              <h1 className='font-bold'>Izin Sakit</h1>
-              <p className='text-xs mt-2'>20 July 2025</p>
-              <p className='text-yellow-500 text-xs'>Waiting for Approval</p>
-            </div>
-            <BsArrowRightCircle className='text-xl' />
-          </div>
+          {requestTimeOff?.map((timeOff: any, index: number) => {
+            return (
+              <div
+                className='flex justify-between items-center py-1 border-b-1 border-gray-300'
+                key={index}
+              >
+                <div>
+                  <h1 className='font-bold'>{timeOff?.reason}</h1>
+                  <p className='text-xs mt-2'>
+                    {timeOff?.startDate} - {timeOff?.endDate}
+                  </p>
+                  <p className='text-yellow-500 text-xs'>{timeOff?.status}</p>
+                  {
+                    timeOff?.leave_request_evidences.map((image: any, index: number) => {
+                      return(
+                        <div key={index}>
+                          <img src={image?.image} style={{width: '100px', height: '100px'}} />
+                        </div>
+                      )
+                    })
+                  }
+                </div>
+                <BsArrowRightCircle className='text-xl' />
+              </div>
+            );
+          })}
         </div>
       </div>
 
